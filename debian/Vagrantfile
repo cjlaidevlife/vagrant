@@ -4,9 +4,15 @@ Vagrant.configure(2) do |config|
    config.vm.box = "generic/debian10"
    config.vm.box_version = "4.0.2"
    config.vm.define vm_name = 'debian10'
+   config.vm.network "private_network", type: "dhcp"
 
+   # configure for ssh public key from local 
+   config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/id_rsa.pub"
    config.vm.provision "shell", privileged: false, inline: <<-SHELL
-     sudo apt-get update
+     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
    SHELL
+
+   # flexible configure for bootstrap
+   config.vm.provision "shell", path: "./src/bootstrap.sh"
 
 end
